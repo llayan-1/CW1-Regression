@@ -5,7 +5,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.linear_model import Ridge, Lasso
-from sklearn.ensemble import RandomForestRegressor, HistGradientBoostingRegressor
+from sklearn.ensemble import RandomForestRegressor, HistGradientBoostingRegressor, StackingRegressor
 from src.feature_engineering import add_engineered_features
 
 np.random.seed(123)
@@ -33,6 +33,20 @@ models = {
     "Lasso(alpha=0.01)": Lasso(alpha=0.01, max_iter=5000),
     "RandomForest(200)": RandomForestRegressor(n_estimators=200, random_state=123),
     "HistGB": HistGradientBoostingRegressor(random_state=123),
+    "HistGB_tuned": HistGradientBoostingRegressor(
+        learning_rate=0.05, max_iter=200, max_depth=3,
+        l2_regularization=1.0, random_state=123,
+    ),
+    "Stack(HistGB+RF)": StackingRegressor(
+        estimators=[
+            ("histgb", HistGradientBoostingRegressor(
+                learning_rate=0.05, max_iter=200, max_depth=3,
+                l2_regularization=1.0, random_state=123)),
+            ("rf", RandomForestRegressor(n_estimators=200, random_state=123)),
+        ],
+        final_estimator=Ridge(alpha=1.0),
+        cv=5,
+    ),
 }
 
 cv = KFold(n_splits=5, shuffle=True, random_state=123)
