@@ -50,9 +50,10 @@ def main():
     # Grid (safe size: good improvement, not too slow)
     param_grid = {
         "model__learning_rate": [0.03, 0.05, 0.1],
-        "model__max_iter": [200, 400, 800],
-        "model__max_depth": [3, 5, None],
-        "model__l2_regularization": [0.0, 0.1, 1.0],
+        "model__max_iter": [200, 400],
+        "model__max_depth": [3, 5],
+        "model__l2_regularization": [0.1, 1.0],
+        "model__min_samples_leaf": [5, 10, 20, 50],
     }
 
     search = GridSearchCV(
