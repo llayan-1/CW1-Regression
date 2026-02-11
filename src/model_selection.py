@@ -6,6 +6,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.linear_model import Ridge, Lasso
 from sklearn.ensemble import RandomForestRegressor, HistGradientBoostingRegressor
+from src.feature_engineering import add_engineered_features
 
 np.random.seed(123)
 
@@ -13,6 +14,7 @@ np.random.seed(123)
 df = pd.read_csv("data/CW1_train.csv")
 X = df.drop(columns=["outcome"])
 y = df["outcome"]
+X = add_engineered_features(X)
 
 # Identify feature types
 categorical_cols = X.select_dtypes(include=["object"]).columns.tolist()
