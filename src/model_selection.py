@@ -31,7 +31,10 @@ preprocessor = ColumnTransformer(
 models = {
     "Ridge(alpha=1.0)": Ridge(alpha=1.0),
     "Lasso(alpha=0.01)": Lasso(alpha=0.01, max_iter=5000),
-    "RandomForest(200)": RandomForestRegressor(n_estimators=200, random_state=123),
+    "RandomForest_tuned": RandomForestRegressor(
+        n_estimators=300, max_depth=15, min_samples_leaf=10,
+        max_features=0.5, min_samples_split=2, random_state=123,
+    ),
     "HistGB": HistGradientBoostingRegressor(random_state=123),
     "HistGB_tuned": HistGradientBoostingRegressor(
         learning_rate=0.05, max_iter=200, max_depth=3,
@@ -42,7 +45,9 @@ models = {
             ("histgb", HistGradientBoostingRegressor(
                 learning_rate=0.05, max_iter=200, max_depth=3,
                 l2_regularization=1.0, random_state=123)),
-            ("rf", RandomForestRegressor(n_estimators=200, random_state=123)),
+            ("rf", RandomForestRegressor(
+                n_estimators=300, max_depth=15, min_samples_leaf=10,
+                max_features=0.5, min_samples_split=2, random_state=123)),
         ],
         final_estimator=Ridge(alpha=1.0),
         cv=5,
