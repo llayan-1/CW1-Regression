@@ -1,15 +1,20 @@
+import numpy as np
+
 def add_engineered_features(df):
     """
-    Add physically/structurally justified engineered features.
-    Modifies the dataframe in-place and returns it.
+    Add engineered features focused on the strongest predictors of outcome.
+    Returns a new dataframe.
     """
-    # Volume of the diamond (x * y * z dimensions)
-    df["volume"] = df["x"] * df["y"] * df["z"]
+    df_new = df.copy()
 
-    # Squared carat — captures non-linear price/outcome scaling
-    df["carat_sq"] = df["carat"] ** 2
+    # Depth transforms — depth is the strongest predictor (r=0.41)
+    df_new["depth_sq"] = df_new["depth"] ** 2
+    df_new["log_depth"] = np.log(df_new["depth"])
 
-    # Carat * depth interaction — heavier stones with more depth behave differently
-    df["carat_depth"] = df["carat"] * df["depth"]
+    # Interactions between top predictors
+    df_new["depth_b3"] = df_new["depth"] * df_new["b3"]
+    df_new["depth_b1"] = df_new["depth"] * df_new["b1"]
+    df_new["depth_a1"] = df_new["depth"] * df_new["a1"]
+    df_new["b3_b1"] = df_new["b3"] * df_new["b1"]
 
-    return df
+    return df_new
