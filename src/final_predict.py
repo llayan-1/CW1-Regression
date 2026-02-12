@@ -35,9 +35,10 @@ def main():
     # Preprocessing
     preprocessor = ColumnTransformer(
         transformers=[
-            ("num", StandardScaler(), numerical_cols),
+            ("num", "passthrough", numerical_cols),
             ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols),
-        ]
+        ],
+        remainder="drop",
     )
 
     # Stacking: HistGB_tuned + RF_tuned, meta-learner = Ridge
