@@ -17,7 +17,7 @@ This repository contains my implementation for Coursework 1 (Regression). The ob
   * Model selection and tuning
   * Final model training and prediction
 
-* `notebooks/`
+* `Notebooks/`
   Jupyter notebooks used for exploratory data analysis.
 
 ---
