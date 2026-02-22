@@ -7,7 +7,7 @@ def add_engineered_features(df):
     """
     df_new = df.copy()
 
-    # Depth transforms — depth is the strongest predictor (r=0.41)
+    # Depth transforms
     df_new["depth_sq"] = df_new["depth"] ** 2
     df_new["log_depth"] = np.log(df_new["depth"])
 

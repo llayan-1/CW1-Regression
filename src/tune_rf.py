@@ -15,11 +15,12 @@ def main():
     df = pd.read_csv("data/CW1_train.csv")
     y = df["outcome"]
     X = df.drop(columns=["outcome"])
-    X = add_engineered_features(X)
+    X = add_engineered_features(X) # Add engineered features before preprocessing
 
     categorical_cols = X.select_dtypes(include=["object"]).columns.tolist()
     numerical_cols = X.select_dtypes(exclude=["object"]).columns.tolist()
-
+    
+    # Preprocessing: scale numerics, one-hot encode categoricals
     preprocessor = ColumnTransformer(
         transformers=[
             ("num", StandardScaler(), numerical_cols),
@@ -36,7 +37,8 @@ def main():
             ("model", model),
         ]
     )
-
+    
+    # 3-fold used here to reduce compute time during RandomizedSearch
     cv = KFold(n_splits=3, shuffle=True, random_state=RANDOM_STATE)
 
     param_distributions = {
@@ -58,6 +60,7 @@ def main():
         verbose=1,
     )
 
+    # Fit the search
     search.fit(X, y)
 
     print("\nBest CV R2:", search.best_score_)
