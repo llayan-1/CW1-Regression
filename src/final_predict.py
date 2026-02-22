@@ -11,6 +11,8 @@ from sklearn.ensemble import (
     StackingRegressor,
 )
 
+from sklearn.model_selection import cross_val_score, KFold
+
 from src.feature_engineering import add_engineered_features
 
 RANDOM_STATE = 123
@@ -62,9 +64,33 @@ def main():
         ("model", stacking),
     ])
 
+    # CV score (comparable to model_selection.py output)
+    cv = KFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
+    cv_scores = cross_val_score(pipe, X_train, y_train, scoring="r2", cv=cv, n_jobs=-1)
+    print(f"CV R²: {cv_scores.mean():.4f} ± {cv_scores.std():.4f}")
+
     # Train on full training set
     pipe.fit(X_train, y_train)
     print("Model trained on full training set.")
+
+    # Feature importances from base estimators
+    feature_names = pipe.named_steps["preprocess"].get_feature_names_out()
+    feature_names = [f.replace("num__", "").replace("cat__", "") for f in feature_names]
+
+    for name, est in pipe.named_steps["model"].named_estimators_.items():
+        if hasattr(est, "feature_importances_"):
+            imp = pd.Series(est.feature_importances_, index=feature_names)
+            print(f"\nTop 10 feature importances ({name}):")
+            print(imp.sort_values(ascending=False).head(10).to_string())
+
+    # Residual check on training data
+    y_pred_train = pipe.predict(X_train)
+    residuals = y_train.values - y_pred_train
+    print("\nTraining residuals:")
+    print(f"  Mean : {residuals.mean():.4f}")
+    print(f"  Std  : {residuals.std():.4f}")
+    print(f"  Min  : {residuals.min():.4f}")
+    print(f"  Max  : {residuals.max():.4f}")
 
     # Predict on test set
     yhat = pipe.predict(X_test)

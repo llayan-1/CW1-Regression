@@ -20,14 +20,6 @@ X = add_engineered_features(X)
 categorical_cols = X.select_dtypes(include=["object"]).columns.tolist()
 numerical_cols = X.select_dtypes(exclude=["object"]).columns.tolist()
 
-# Preprocessing (fit inside CV via pipeline)
-preprocessor = ColumnTransformer(
-    transformers=[
-        ("num", StandardScaler(), numerical_cols),
-        ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols),
-    ]
-)
-
 models = {
     "Ridge(alpha=1.0)": Ridge(alpha=1.0),
     "Lasso(alpha=0.01)": Lasso(alpha=0.01, max_iter=5000),
@@ -58,8 +50,14 @@ cv = KFold(n_splits=5, shuffle=True, random_state=123)
 
 rows = []
 for name, model in models.items():
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("num", StandardScaler(), numerical_cols),
+            ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols),
+        ],
+        remainder="drop",
+    )
     pipe = Pipeline([("preprocess", preprocessor), ("model", model)])
-
     scores = cross_val_score(pipe, X, y, scoring="r2", cv=cv, n_jobs=-1)
     rows.append(
         {"model": name, "mean_r2": scores.mean(), "std_r2": scores.std()}

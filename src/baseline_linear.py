@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 from sklearn.pipeline import Pipeline
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Ridge
 
 from .preprocessing import make_preprocessor
 
@@ -13,21 +13,21 @@ def main():
     train_df = pd.read_csv("data/CW1_train.csv")
     test_df = pd.read_csv("data/CW1_test.csv")
 
-    #split features and target
+    # Split features and target
     y_train = train_df["outcome"]
     x_train = train_df.drop(columns=["outcome"])
 
-    #Build pipline: preprocess then model
-    preprocesser = make_preprocessor(x_train)
+    # Build pipeline: preprocess then model
+    preprocessor = make_preprocessor(x_train)
     model = Pipeline(
         steps=[
-        ("preprocess", preprocesser),
-        ("regressor", LinearRegression()),   
+        ("preprocess", preprocessor),
+        ("regressor", Ridge(alpha=1.0)),
         ]
     )
 
 
-    #Train
+    # Train
     model.fit(x_train, y_train)
 
     # Predict on test
@@ -35,8 +35,8 @@ def main():
 
     # Save submission
     out = pd.DataFrame({"yhat": yhat})
-    out.to_csv("CW1_submission_K23065725.csv", index=False)
-    print("Saved: CW1_submission_K23065725.csv")
+    out.to_csv("CW1_submission_baseline_ridge.csv", index=False)
+    print("Saved: CW1_submission_baseline_ridge.csv")
 
 
 if __name__ == "__main__":
