@@ -4,4 +4,3 @@ __pycache__/
 .DS_Store
 .venv/
 venv/
-CW1_submission_*.csv
